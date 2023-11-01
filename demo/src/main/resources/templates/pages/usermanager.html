@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="_csrf" content="${_csrf.token}" />
+    <meta name="_csrf_header" content="${_csrf.headerName}" />
+    <span th:replace="\layout\Head :: head"></span>
+  </head>
+
+  <body
+    class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed"
+  >
+    <div class="wrapper">
+      <!-- Navbar -->
+      <span th:replace="\layout\Header :: header"></span>
+      <!-- /.navbar -->
+
+      <!-- Main Sidebar Container -->
+      <span th:replace="\layout\Sidebar :: sidebar"></span>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>Danh sách Users</h1>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active">Danh sách Users</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+          <div class="container-fluid">
+            <!-- /.row -->
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">
+                      <button
+                        type="button"
+                        class="btn btn-default"
+                        data-toggle="modal"
+                        data-target="#modal-default"
+                      >
+                        Them moi
+                      </button>
+                    </h3>
+
+                    <div class="card-tools">
+                      <div
+                        class="input-group input-group-sm"
+                        style="width: 150px"
+                      >
+                        <input
+                          id="keyword"
+                          type="text"
+                          name="table_search"
+                          class="form-control float-right"
+                          placeholder="keyword"
+                        />
+
+                        <div class="input-group-append">
+                          <button
+                            type="submit"
+                            class="btn btn-default"
+                            onclick="search()"
+                          >
+                            <i class="fas fa-search"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body table-responsive p-0">
+                    <div id="user_table">
+                      <!-- users data will be loaded here ! -->
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+            </div>
+            <!-- /.row -->
+          </div>
+        </section>
+      </div>
+      <!-- Control Sidebar -->
+      <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+      </aside>
+      <!-- /.control-sidebar -->
+
+      <!-- Main Footer -->
+    </div>
+    <span th:replace="\layout\Footer :: footer"></span>
+
+    <!-- ./wrapper -->
+
+    <!-- REQUIRED SCRIPTS -->
+    <span th:replace="\layout\Script :: script"></span>
+    <!-- Modal Create User -->
+    <div class="modal fade" id="modal-default">
+      <form
+        role="form"
+        th:action="@{/user/save}"
+        th:object="${user}"
+        method="post"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Create User</h4>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="card-body">
+                <div class="form-group">
+                  <label for="firstname">First Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="firstname"
+                    placeholder="Enter name"
+                    name="firstname"
+                    th:field="*{firstName}"
+                  />
+                </div>
+                <p
+                  th:errors="*{firstName}"
+                  style="color: red"
+                  th:if="${#fields.hasErrors('firstName')}"
+                ></p>
+                <div class="form-group">
+                  <label for="lastname">Last Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="lastname"
+                    placeholder="Enter name"
+                    name="lastname"
+                    th:field="*{lastName}"
+                  />
+                </div>
+                <p
+                  th:errors="*{lastName}"
+                  style="color: red"
+                  th:if="${#fields.hasErrors('lastName')}"
+                ></p>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Email address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    th:field="*{email}"
+                    class="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Enter email"
+                  />
+                </div>
+                <p
+                  th:errors="*{email}"
+                  style="color: red"
+                  th:if="${#fields.hasErrors('email')}"
+                ></p>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    th:field="*{password}"
+                    class="form-control"
+                    id="exampleInputPassword1"
+                    placeholder="Password"
+                  />
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </form>
+    </div>
+
+    <script>
+      
+    </script>
+    <script>
+      function search() {
+        var keyword = $("#keyword").val();
+        console.log(keyword);
+
+        $.ajax({
+          type: "Post",
+          url: "/user/search",
+          data: {
+            keyword: keyword,
+          },
+          success: function (data) {
+            // $("#editModal" + userId).modal("hide"); // Đóng modal sau khi cập nhật
+            $("#user_table").html(data);
+          },
+          error: function (e) {
+            console.log(e);
+          },
+        });
+      }
+    </script>
+  </body>
+</html>
