@@ -44,21 +44,16 @@ public class UserManagerController {
 
     @GetMapping("/user/load-data")
     public String getUsersDataList(Model model, @RequestParam(name = "pageNumber", defaultValue = "1") Integer page,
-            @RequestParam(name = "pageSize", defaultValue = "5") Integer size) {
-        // int currentPage = page.orElse(1);
+            @RequestParam(name = "size", defaultValue = "5") Integer size) {
+
         // int pageSize = size.orElse(5);
         Page<UserResponseDTO> userPage = this.userServiceInterface
                 .getUserData(PageRequest.of(page - 1, size));
 
         model.addAttribute("users", userPage);
-
-        int totalPages = userPage.getTotalPages();
-        if (totalPages > 0) {
-            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-                    .boxed()
-                    .collect(Collectors.toList());
-            model.addAttribute("pageNumbers", pageNumbers);
-        }
+        model.addAttribute("pageNumber1", page);
+        model.addAttribute("isNext", userPage.hasNext());
+        model.addAttribute("isPre", userPage.hasPrevious());
         return "pages/modal/user_table";
     }
 
@@ -105,13 +100,21 @@ public class UserManagerController {
     }
 
     @PostMapping("user/search")
-    public String search(@RequestParam("keyword") String keyWord, Model model) {
-        List<UserResponseDTO> dataSearch = this.userServiceInterface.getDataSearch(keyWord);
-        if (dataSearch.isEmpty()) {
+    public String search(@RequestParam("keyword") String keyWord, Model model,
+            @RequestParam(name = "pageNumber", defaultValue = "1") Integer page,
+            @RequestParam(name = "size", defaultValue = "5") Integer size) {
+        System.out.println();
+        Page<UserResponseDTO> dataSearchPage = this.userServiceInterface
+                .getDataSearch(keyWord, PageRequest.of(page - 1, size));
+        if (dataSearchPage.isEmpty()) {
             model.addAttribute("errorMessage", "DATA NOT FOUND !");
             return "pages/modal/user_table";
         }
-        model.addAttribute("users", dataSearch);
+        model.addAttribute("users", dataSearchPage);
+        model.addAttribute("pageNumber1", page);
+        model.addAttribute("keyWord", keyWord);
+        model.addAttribute("isNext", dataSearchPage.hasNext());
+        model.addAttribute("isPre", dataSearchPage.hasPrevious());
         return "pages/modal/user_table";
     }
 }

@@ -131,7 +131,10 @@ public class UserServiceImpl implements UserServiceInterface {
     }
 
     @Override
-    public List<UserResponseDTO> getDataSearch(String keyWord) {
+    public Page<UserResponseDTO> getDataSearch(String keyWord, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
         List<User> users = new ArrayList<>();
         if (keyWord == null || keyWord.isEmpty() || keyWord.isBlank()) {
             users = this.userRepo.findAll();
@@ -148,28 +151,17 @@ public class UserServiceImpl implements UserServiceInterface {
                     .build();
             dataSearch.add(data);
         }
-        return dataSearch;
-    }
+        Collections.reverse(dataSearch);
+        List<UserResponseDTO> userInPage;
 
-    // @Override
-    // public List<UserResponseDTO> getUsersByPage(int pageNumber, int pageSize) {
-    // // Logic để trả về một trang sách dựa trên số trang và kích thước trang
-    // List<User> users = this.userRepo.findAll();
-    // List<UserResponseDTO> userData = new ArrayList<>();
-    // for (User user : users) {
-    // UserResponseDTO data = UserResponseDTO.builder()
-    // .id(user.getUserId())
-    // .firstName(user.getFirstName())
-    // .lastName(user.getLastName())
-    // .email(user.getEmail())
-    // .build();
-    // userData.add(data);
-    // }
-    // int startIndex = (pageNumber - 1) * pageSize;
-    // int endIndex = Math.min(startIndex + pageSize, userData.size());
-    // if (startIndex >= endIndex) {
-    // return new ArrayList<>();
-    // }
-    // return userData.subList(startIndex, endIndex);
-    // }
+        if (dataSearch.size() < startItem) {
+            userInPage = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, dataSearch.size());
+            userInPage = dataSearch.subList(startItem, toIndex);
+        }
+        Page<UserResponseDTO> userSearchPage = new PageImpl<UserResponseDTO>(userInPage,
+                PageRequest.of(currentPage, pageSize), dataSearch.size());
+        return userSearchPage;
+    }
 }

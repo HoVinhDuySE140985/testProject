@@ -28,6 +28,6 @@ public interface UserServiceInterface {
 
     boolean deleteUser(Long userId);
 
-    List<UserResponseDTO> getDataSearch(String keyWord);
+    Page<UserResponseDTO> getDataSearch(String keyWord, Pageable pageable);
 
 }

@@ -86,7 +86,10 @@
                     <div id="user_table">
                       <!-- users data will be loaded here ! -->
                     </div>
+                    >
+                    </nav>
                   </div>
+
                   <!-- /.card-body -->
                 </div>
                 <!-- /.card -->
@@ -213,13 +216,37 @@
     </div>
 
     <script>
-      
+      $(function () {
+        loadUserData();
+
+        $("#modal-default form").on("submit", function (e) {
+          e.preventDefault();
+          $.ajax({
+            type: "Post",
+            url: "/user/save",
+            data: $(this).serialize(),
+            success: function (data) {
+              $("#modal-default").modal("hide");
+              loadUserData();
+            },
+          });
+        });
+      });
+
+      let loadUserData = function () {
+        $.ajax({
+          url: "/user/load-data",
+          method: "Get",
+          dataType: "HTML",
+          success: function (data) {
+            $("#user_table").html(data);
+          },
+        });
+      };
     </script>
     <script>
       function search() {
         var keyword = $("#keyword").val();
-        console.log(keyword);
-
         $.ajax({
           type: "Post",
           url: "/user/search",

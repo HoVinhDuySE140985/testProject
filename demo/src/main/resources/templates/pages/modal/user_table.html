@@ -185,33 +185,47 @@
 </table>
 <nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
-    <li class="page-item disabled previousPageButton">
-      <a class="page-link" href="#" tabindex="-1" id="previousPageButton"
+    <li class="page-item">
+      <a
+        tabindex="-1"
+        id="previousPageButton"
+        class="page-link"
+        th:data-page="${pageNumber1}"
+        th:data-size="${users.size}"
+        th:data-total="${users.totalPages}"
+        th:data-keyword="${keyWord}"
+        onclick="handlePreviousClick(this.getAttribute('data-page'),this.getAttribute('data-size'),this.getAttribute('data-total'),this.getAttribute('data-keyword'))"
+        href="#"
+        th:style="${isPre ? 'display: inline-block;' : 'display: none;'}"
         >Previous</a
       >
     </li>
 
-    <li
-      id="data_page"
-      class="page-item"
-      th:if="${users.totalPages > 0}"
-      th:each="pageNumber : ${pageNumbers}"
-      th:data-total-pages="${users.totalPages}"
-    >
+    <li id="data_page" class="page-item">
       <a
-        class="page-link"
+        id="pageNo"
+        th:data-total="${users.totalPages}"
         href="#"
-        id="loadDataButton"
-        th:data-page="${pageNumber}"
-        th:data-size="${users.size}"
-        th:text="${pageNumber}"
-        th:class="${pageNumber==users.number + 1} ? active "
+        th:text="${pageNumber1}"
+        th:data-page="${pageNumber1}"
         style="color: blue; font-size: 22px; margin-right: 8px"
       ></a>
     </li>
 
     <li class="page-item">
-      <a class="page-link" href="#" id="nextPageButton">Next</a>
+      <a
+        class="page-link"
+        th:data-page="${pageNumber1}"
+        th:data-size="${users.size}"
+        th:data-total="${users.totalPages}"
+        th:data-keyword="${keyWord}"
+        onload=""
+        onclick="handleNextClick(this.getAttribute('data-page'),this.getAttribute('data-size'),this.getAttribute('data-total'),this.getAttribute('data-keyword'))"
+        href="#"
+        id="nextPageButton"
+        th:style="${isNext ? 'display: inline-block;' : 'display: none ;'}"
+        >Next</a
+      >
     </li>
   </ul>
 </nav>
@@ -270,6 +284,41 @@
             $("#user_table").html(response);
           },
         });
+      },
+    });
+  }
+</script>
+
+<script>
+  function handleNextClick(currentPage, pageSize, totalPages, keyword) {
+    var pageNumber = Number(currentPage) + 1;
+    $.ajax({
+      type: "Post",
+      url: "/user/search",
+      data: {
+        keyword: keyword,
+        pageNumber: pageNumber,
+        size: pageSize,
+      },
+      success: function (data) {
+        $("#user_table").html(data);
+      },
+    });
+  }
+
+  function handlePreviousClick(currentPage, pageSize, totalPages, keyWord) {
+    var pageNumber = Number(currentPage) - 1;
+
+    $.ajax({
+      type: "Post",
+      url: "/user/search",
+      data: {
+        keyword: keyWord,
+        pageNumber: pageNumber,
+        size: pageSize,
+      },
+      success: function (data) {
+        $("#user_table").html(data);
       },
     });
   }
